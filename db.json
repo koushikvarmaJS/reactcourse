@@ -1,0 +1,41 @@
+{
+  "notes": [
+    {
+      "id": "1",
+      "content": "HTML is easy",
+      "important": true
+    },
+    {
+      "id": "2",
+      "content": "Browser can execute only JavaScript",
+      "important": true
+    },
+    {
+      "id": "3",
+      "content": "GET and POST are the most important methods of HTTP protocol",
+      "important": false
+    },
+    {
+      "id": "4",
+      "content": "New Note",
+      "important": true
+    }
+  ],
+  "persons": [
+    {
+      "name": "Mary Poppendieck",
+      "number": "39-23-6423122",
+      "id": "4"
+    },
+    {
+      "name": "Bruce Wayne",
+      "number": "5678990",
+      "id": "7713"
+    },
+    {
+      "id": "b359",
+      "name": "Peter Parker",
+      "number": "1234567"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+h1 {
+    color: lightcoral;
+    font-style: italic;
+  }
+h2 {
+    color: palevioletred;
+    font-style: italic;
+  }
+.note {
+    color: blue;
+    padding-top: 3px;
+    font-size: 15px;
+  }
+.message {
+    color: green;
+    background: lightgrey;
+    font-size: 20px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }

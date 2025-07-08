@@ -1,61 +1,81 @@
-import { useState } from 'react'
+import { useState,useEffect } from "react"
+import Note from "./components/Note"
+import  services  from "./services/notes"
+import Message from "./components/Message"
 
-const Most = (props) => {
-  const {value,text} = props
-  if(value){
-    return(
-      <div>
-        <p>Anecdotes with most votes</p>
-        <p>{text}</p>
-        <p>This anecdote has {value} votes</p>
-      </div>
-    )
-  }
-  else{
-    return(
-      <p>You can vote the anecdotes</p>
-    )
-  }
-}
+const App = (props) => {
+  const [notes, setNotes] = useState([])
+  const [newNote,setNewNote] = useState('a new note..')
+  const [showAll, setShowAll] = useState(true)
+  const [errorMessage,setErrorMessage] = useState(null)
 
-const App = () => {
-  const anecdotes = [
-    'If it hurts, do it more often.',
-    'Adding manpower to a late software project makes it later!',
-    'The first 90 percent of the code accounts for the first 90 percent of the development time...The remaining 10 percent of the code accounts for the other 90 percent of the development time.',
-    'Any fool can write code that a computer can understand. Good programmers write code that humans can understand.',
-    'Premature optimization is the root of all evil.',
-    'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
-    'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.',
-    'The only way to go fast, is to go well.'
-  ]
-   
-  const [selected, setSelected] = useState(0)
-  const [votes,setVotes] = useState(Array(anecdotes.length).fill(0))
-  const [most,setMost] = useState(0)
+  const notesToShow = showAll ? notes : notes.filter(note => note.important === true)
+  const toggle = (id) => {
+    console.log(`importance of ${id} needs to be toggled`)
+    const note = notes.find(n => n.id===id)
+    const changedNote = {...note,important:!note.important}
 
-  const handleClick = () => {
-    const number = Math.floor(Math.random()*8)
-    setSelected(number)
-    console.log(number)
+    services.update(id,changedNote).then(returnedNote => {
+      console.log('put toggle response', returnedNote)
+      setNotes(notes.map(note => note.id===id ? returnedNote:note))
+    })
   }
 
-  const voteClick = () => {
-    const copy = [...votes]
-    copy[selected]+=1
-    setVotes(copy)
-    if(copy[selected]>=votes[most]){
-      setMost(selected)
+  const hook = () => {
+    console.log('effect')
+    services.getAll()
+      .then(initialValues => {
+        console.log('promise fulfilled in hook')
+        setNotes(initialValues)
+      })
+  }
+  
+  useEffect(hook, [])
+  console.log('render',notes.length, 'notes')
+
+  const addNote = (event) => {
+    event.preventDefault()
+    console.log('button clicked addNote', event.target)
+    const noteObject = {
+      id: String(notes.length + 1),
+      content : newNote,
+      important : Math.random() < 0.5
     }
+
+    services.create(noteObject).then(returnedNote => {
+      console.log('post new note',returnedNote)
+      setNotes(notes.concat(returnedNote))
+      setNewNote('')
+    })
+  }
+
+  const handleNoteChange = (event) => {
+    console.log('handlenotechange',event.target.value)
+    setNewNote(event.target.value)
   }
 
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p>This anecdote has {votes[selected]} votes</p>
-      <button onClick={voteClick}>vote</button>
-      <button onClick={handleClick}>next anecdote</button>
-      <Most value={votes[most]} text={anecdotes[most]}/>
+      <h1>Notes</h1>
+      <Message message={errorMessage}/>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          showing {showAll ? 'all' : 'important'}
+        </button>
+      </div>
+      <ul>
+        {notesToShow.map(note => 
+          <Note key={note.id} note={note} toggle={()=>toggle(note.id)}/>
+        )}
+      </ul>
+
+      <form onSubmit={addNote}>
+        <input 
+        value={newNote}
+        onChange={handleNoteChange}
+        />
+        <button type="submit">save</button>
+      </form>   
     </div>
   )
 }
