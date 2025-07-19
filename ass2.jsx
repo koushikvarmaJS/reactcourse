@@ -217,13 +217,15 @@ const App1 = () => {
       services.create(newPerson).then(response => {
         console.log('adding new person',response)
         setPersons(persons.concat(response))
+        setMessage(`Added new contact: ${newName}`)
+        setTimeout(()=> {setMessage(null)},5000)
+        setNewName('')
+        setNewNumber('')
       }).catch(error => {
-        console.log(error)
+        console.log("error addding new person", error.response.data)
+        setMessage(error.response.data.error)
+        setTimeout(()=> {setMessage(null)},5000)
       })
-      setMessage(`Added new contact: ${newName}`)
-      setTimeout(()=> {setMessage(null)},5000)
-      setNewName('')
-      setNewNumber('')
     }
   }
 
